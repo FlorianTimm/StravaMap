@@ -19,7 +19,9 @@ echo <<<EOF
     <ows:Operation name="GetCapabilities">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://dev.florian-timm.de/strava/wfs/index.php?"/>
+          <ows:Get xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php?"/>
         </ows:HTTP>
       </ows:DCP>
       <ows:Parameter name="AcceptVersions">
@@ -45,32 +47,48 @@ echo <<<EOF
     <ows:Operation name="DescribeFeatureType">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://dev.florian-timm.de/strava/wfs/index.php?"/>
-          <ows:Post xlink:href="http://dev.florian-timm.de/strava/wfs/index.php"/>
+          <ows:Get xlink:href="
+EOF . Config::$url . <<<EOF
+          wfs/index.php?"/>
+          <ows:Post xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php"/>
         </ows:HTTP>
       </ows:DCP>
     </ows:Operation>
     <ows:Operation name="ListStoredQueries">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://dev.florian-timm.de/strava/wfs/index.php?"/>
-          <ows:Post xlink:href="http://dev.florian-timm.de/strava/wfs/index.php"/>
+          <ows:Get xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php?"/>
+          <ows:Post xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php"/>
         </ows:HTTP>
       </ows:DCP>
     </ows:Operation>
     <ows:Operation name="DescribeStoredQueries">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://dev.florian-timm.de/strava/wfs/index.php?"/>
-          <ows:Post xlink:href="http://dev.florian-timm.de/strava/wfs/index.php"/>
+          <ows:Get xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php?"/>
+          <ows:Post xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php"/>
         </ows:HTTP>
       </ows:DCP>
     </ows:Operation>
     <ows:Operation name="GetFeature">
       <ows:DCP>
         <ows:HTTP>
-          <ows:Get xlink:href="http://dev.florian-timm.de/strava/wfs/index.php?"/>
-          <ows:Post xlink:href="http://dev.florian-timm.de/strava/wfs/index.php"/>
+          <ows:Get xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php?"/>
+          <ows:Post xlink:href="
+EOF . Config::$url . <<<EOF
+wfs/index.php"/>
         </ows:HTTP>
       </ows:DCP>
     </ows:Operation>
@@ -173,17 +191,17 @@ for ($i = 0; $i < $rs->columnCount(); $i++) {
 print_r($columns);
 */
 
-foreach ($layers as $key=>$value) {
-	$srid = 0;
-	$sql = 'SELECT ST_SRID('.$value[1].') srid FROM '.$value[0].' LIMIT 1';
-	//echo $sql;
-	foreach ($db->query($sql) as $row) {
-		$srid = $row['srid'];
-	}
-	echo '<FeatureType>
-			<Name xmlns:gis="http://florian-timm.de/gis">gis:'.$key.'</Name>
-			<Title>gis:'.$key.'</Title>
-		  <DefaultCRS>EPSG:'.$srid.'</DefaultCRS>
+foreach ($layers as $key => $value) {
+  $srid = 0;
+  $sql = 'SELECT ST_SRID(' . $value[1] . ') srid FROM ' . $value[0] . ' LIMIT 1';
+  //echo $sql;
+  foreach ($db->query($sql) as $row) {
+    $srid = $row['srid'];
+  }
+  echo '<FeatureType>
+			<Name xmlns:gis="http://florian-timm.de/gis">gis:' . $key . '</Name>
+			<Title>gis:' . $key . '</Title>
+		  <DefaultCRS>EPSG:' . $srid . '</DefaultCRS>
 		  <OutputFormats>
 			<Format>application/gml+xml; version=2.1</Format>
 		  </OutputFormats>
@@ -193,10 +211,9 @@ foreach ($layers as $key=>$value) {
 		  </ows:WGS84BoundingBox>
 		</FeatureType>';
 }
-	
+
 echo <<<EOF
   </FeatureTypeList>
 </WFS_Capabilities> 
 EOF;
-
 ?>

@@ -7,12 +7,12 @@ $delete = $db->prepare("delete from strava_points where activity = ?");
 
 $id = 0;
 
-  
+
 $sql = 'SELECT id FROM strava_activity where user = ' . $user . ' and polyline is not null and not id in (SELECT activity from strava_points) ORDER BY starttime DESC LIMIT 1;';
 //echo $sql;
 foreach ($db->query($sql) as $row) {
     $id = $row['id'];
-    
+
     //setup the request, you can also use CURLOPT_URL
     $ch = curl_init('https://www.strava.com/api/v3/activities/' . $id . '/streams?keys=latlng,distance,altitude,time,cadence,heartrate,temp,watts,velocity_smooth,moving,grade_smooth&key_by_type=false');
 
@@ -21,8 +21,8 @@ foreach ($db->query($sql) as $row) {
 
     //Set your auth headers
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Content-Type: application/json',
-    'Authorization: Bearer ' . $token
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $token
     ));
 
     // get stringified data/output. See CURLOPT_RETURNTRANSFER
@@ -37,19 +37,19 @@ foreach ($db->query($sql) as $row) {
     //var_dump($stream);
 
     try {
-        
+
         //var_dump($activities);
         $delete->execute([$id]);
 
 
         for ($i = 0; $i < $stream["time"]["original_size"]; $i++) {
-        // Strava: latlng,distance,altitude,time,cadence,heartrate,temp,watts,velocity_smooth,moving,grade_smooth
-        // DB: activity,sort,point,distance,time,altitude,velocity,heartrate,cadence,watts,moving,grade
+            // Strava: latlng,distance,altitude,time,cadence,heartrate,temp,watts,velocity_smooth,moving,grade_smooth
+            // DB: activity,sort,point,distance,time,altitude,velocity,heartrate,cadence,watts,moving,grade
             $stmt->bindParam(1, $id);
             $stmt->bindParam(2, $i);
             $start = null;
             if (array_key_exists("latlng", $stream)) {
-                $start="POINT(" . $stream["latlng"]['data'][$i][1] . " " .$stream["latlng"]['data'][$i][0] . ")";
+                $start = "POINT(" . $stream["latlng"]['data'][$i][1] . " " . $stream["latlng"]['data'][$i][0] . ")";
             }
             $stmt->bindParam(3, $start);
             $stmt->bindParam(4, $stream["distance"]['data'][$i]);
@@ -63,15 +63,10 @@ foreach ($db->query($sql) as $row) {
             $stmt->bindParam(12, $stream["grade_smooth"]['data'][$i]);
             $stmt->bindParam(13, $stream["temp"]['data'][$i]);
             $stmt->execute();
-            
         }
-        
-
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         echo "Connection failed: " . $e->getMessage();
     }
-    
-    
 }
 $db = null;
 header("Refresh:0");

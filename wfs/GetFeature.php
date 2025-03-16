@@ -14,45 +14,49 @@ $layer_name = explode(':', $_GET['TYPENAMES'])[1];
 $layer = $layers[$layer_name];
 
 
-function xml($layer_name, $rs) {
+function xml($layer_name, $rs)
+{
     header('Content-type: application/xml');
     echo <<<EOF
 <?xml version='1.0' encoding='UTF-8'?>
-<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd https://florian-timm.de/gis http://dev.florian-timm.de/strava/wfs/server.php?REQUEST=DescribeFeatureType" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2019-02-19T21:02:19Z" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="unknown" numberReturned="0">
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd https://florian-timm.de/gis 
+EOF . Config::$url . <<<EOF
+wfs/server.php?REQUEST=DescribeFeatureType" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2019-02-19T21:02:19Z" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="unknown" numberReturned="0">
 EOF;
     foreach ($rs as $row) {
-    
+
         echo '<wfs:member>
-            <gis:'.$layer_name.' xmlns:gis="https://florian-timm.de/gis" gml:id="gis_'.$layer_name.'_' . $row['id'] . '">';
-            
-    for ($i = 0; $i < $rs->columnCount()-2; $i++) {
-        $col = $rs->getColumnMeta($i);
-        if ($col["native_type"] != "GEOMETRY" && $row[$i] != null) {
-            echo '<gis:'.$col['name'].'>'.$row[$i].'</gis:'.$col['name'].'>';
+            <gis:' . $layer_name . ' xmlns:gis="https://florian-timm.de/gis" gml:id="gis_' . $layer_name . '_' . $row['id'] . '">';
+
+        for ($i = 0; $i < $rs->columnCount() - 2; $i++) {
+            $col = $rs->getColumnMeta($i);
+            if ($col["native_type"] != "GEOMETRY" && $row[$i] != null) {
+                echo '<gis:' . $col['name'] . '>' . $row[$i] . '</gis:' . $col['name'] . '>';
+            }
         }
-    }
-    $geom_txt = $row['geometryWKT'];
-    $geom = explode('(', substr($geom_txt, 0, -1));
-    if ($geom[0] == "LINESTRING") {
-        $geom_type = "LineString";
-        $gml_type = "posList";
-    } else if ($geom[0] == "POINT") {
-        $geom_type = "Point";
-        $gml_type = "pos";
-    }
-    echo '<gis:geom>
-                <gml:'.$geom_type.' gml:id="gis_'.$layer_name.'_' . $row['id'] . '_gis_GEOM" srsName="EPSG:'.$row['geometrySRID'].'">
-                <gml:'.$gml_type.'>' . str_replace(",", " ", $geom[1])  . '</gml:'.$gml_type.'>
-                </gml:'.$geom_type.'>
-            </gis:geom>';                
-            
-         echo '  </gis:'.$layer_name.'>
+        $geom_txt = $row['geometryWKT'];
+        $geom = explode('(', substr($geom_txt, 0, -1));
+        if ($geom[0] == "LINESTRING") {
+            $geom_type = "LineString";
+            $gml_type = "posList";
+        } else if ($geom[0] == "POINT") {
+            $geom_type = "Point";
+            $gml_type = "pos";
+        }
+        echo '<gis:geom>
+                <gml:' . $geom_type . ' gml:id="gis_' . $layer_name . '_' . $row['id'] . '_gis_GEOM" srsName="EPSG:' . $row['geometrySRID'] . '">
+                <gml:' . $gml_type . '>' . str_replace(",", " ", $geom[1])  . '</gml:' . $gml_type . '>
+                </gml:' . $geom_type . '>
+            </gis:geom>';
+
+        echo '  </gis:' . $layer_name . '>
         </wfs:member>';
     }
     echo "</wfs:FeatureCollection>";
 }
 
-function json($rs) {
+function json($layer_name, $rs)
+{
     header('Content-type: application/json');
     echo '{"type": "FeatureCollection", "features": [';
     /*
@@ -63,9 +67,9 @@ function json($rs) {
         $geom_txt = $row['geometryWKT'];
         if ($geom_txt == "") continue;
         $geom = explode('(', substr($geom_txt, 0, -1));
-    
+
         if ($vorher_komma2) echo ",";
-        echo '{"type":"Feature","id":"gis_'.$layer_name.'_' . $row['id'] . '","geometry":{"type":"';
+        echo '{"type":"Feature","id":"gis_' . $layer_name . '_' . $row['id'] . '","geometry":{"type":"';
         if ($geom[0] == "LINESTRING") {
             echo "LineString";
             $gml_type = "posList";
@@ -73,24 +77,23 @@ function json($rs) {
             echo "Point";
             $gml_type = "pos";
         }
-       
-        echo '","coordinates":[[' . str_replace(" ", "," ,str_replace(",", "],[", $geom[1]))  . ']]},"geometry_name":"the_geom","properties":{';     
-            
+
+        echo '","coordinates":[[' . str_replace(" ", ",", str_replace(",", "],[", $geom[1]))  . ']]},"geometry_name":"the_geom","properties":{';
+
         $vorher_komma = false;
-        for ($i = 0; $i < $rs->columnCount()-2; $i++) {
+        for ($i = 0; $i < $rs->columnCount() - 2; $i++) {
             $col = $rs->getColumnMeta($i);
-            
+
             if ($col["native_type"] != "GEOMETRY" && $row[$i] != null) {
                 if ($vorher_komma) echo ',';
-                echo '"'.$col['name'].'":"'.str_replace('"', '\"', $row[$i]).'"';
+                echo '"' . $col['name'] . '":"' . str_replace('"', '\"', $row[$i]) . '"';
                 $vorher_komma = true;
             }
-            
         }
         echo '}}';
         $vorher_komma2 = true;
     }
-    
+
     echo "]}";
 }
 
@@ -98,43 +101,39 @@ function json($rs) {
 
 
 try {
-        //echo $layer[1];
-        $sql = 'SELECT *, AsText('.$layer[1].') geometryWKT, ST_SRID('.$layer[1].') geometrySRID FROM ' . $layer[0];
-        
-        if (isset($_GET['BBOX'])) {
-            $sql .= ' where ST_CONTAINS('.$layer[1].', ST_GEOMFROMTEXT(\'POLYGON((';
-            $bbox = explode(",", $_GET["BBOX"]);
-            $sql .= $bbox[1] . ' ' . $bbox[0] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[3] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[0];
-            $sql .= '))\'))';
-        }
-        
-        if (isset($_GET["user"])) {
-            if (!(isset($_GET['BBOX']))) {
-                $sql .= ' where';
-            }
-            $sql .= ' user = ' . $_GET["user"];
-		}
-        
-		if (isset($_GET["count"]) && $_GET["count"] < 1000) {
-			$sql .= " LIMIT " . $_GET["count"];
-		} else {
-        	$sql .= " LIMIT 5000";
-		}
-		
+    //echo $layer[1];
+    $sql = 'SELECT *, AsText(' . $layer[1] . ') geometryWKT, ST_SRID(' . $layer[1] . ') geometrySRID FROM ' . $layer[0];
 
-        //echo $sql;
-        $rs = $db->query($sql);
-        
-        if ($_GET["outputFormat"] == 'application/json') {
-            json($rs);
-        } else {
-            xml($layer_name, $rs);
+    if (isset($_GET['BBOX'])) {
+        $sql .= ' where ST_CONTAINS(' . $layer[1] . ', ST_GEOMFROMTEXT(\'POLYGON((';
+        $bbox = explode(",", $_GET["BBOX"]);
+        $sql .= $bbox[1] . ' ' . $bbox[0] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[3] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[0];
+        $sql .= '))\'))';
+    }
+
+    if (isset($_GET["user"])) {
+        if (!(isset($_GET['BBOX']))) {
+            $sql .= ' where';
         }
-        
-        
-        
-}
-    catch(PDOException $e) {
-        echo "Connection failed: " . $e->getMessage();
+        $sql .= ' user = ' . $_GET["user"];
+    }
+
+    if (isset($_GET["count"]) && $_GET["count"] < 1000) {
+        $sql .= " LIMIT " . $_GET["count"];
+    } else {
+        $sql .= " LIMIT 5000";
+    }
+
+
+    //echo $sql;
+    $rs = $db->query($sql);
+
+    if ($_GET["outputFormat"] == 'application/json') {
+        json($layer_name, $rs);
+    } else {
+        xml($layer_name, $rs);
+    }
+} catch (PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
 }
 ?>

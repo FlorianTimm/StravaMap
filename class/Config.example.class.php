@@ -1,5 +1,6 @@
 <?php
-class Config {
+class Config
+{
     static $servername = "";
     static $username = "";
     static $password = "";
@@ -7,6 +8,7 @@ class Config {
 
     static $strava_secret = '';
     static $strava_client = '';
-}
 
+    static $url = '';
+}
 ?>
