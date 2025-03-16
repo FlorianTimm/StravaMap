@@ -220,8 +220,8 @@ $db = null;
           if (!hike && feature.get('type') == 'Hike') return false;
           if (!run && feature.get('type') == 'Run') return false;
           if (!other && feature.get('type') != 'Ride' && feature.get('type') != 'Walk' && feature.get('type') != 'Hike' && feature.get('type') != 'Run') return false;
-          if (von && feature.get('start_date') < von) return false;
-          if (bis && feature.get('start_date') > bis) return false;
+          if (von && feature.get('starttime') < von) return false;
+          if (bis && feature.get('starttime') > bis) return false;
 
           return true;
         }
@@ -292,8 +292,8 @@ $db = null;
                 let props = auswahl.getProperties();
                 console.log(props);
                 let info = "<h2>" + props.name + "</h2>";
-                if (props.start_date)
-                  info += "<p>Datum: " + props.start_date + "</p>";
+                if (props.starttime)
+                  info += "<p>Datum: " + props.starttime + "</p>";
                 if (props.elapsed_time)
                   info += "<p>Dauer: " + new Date(props.elapsed_time * 1000).toISOString().substring(11, 16) + "</p>";
                 if (props.athlete_count)
