@@ -249,15 +249,16 @@ $db = null;
                 }
                 let auswahl = event.selected[0];
                 let props = auswahl.getProperties();
+                console.log(props);
                 let info = "<h2>" + props.name + "</h2>";
                 if (props.start_date)
                   info += "<p>Datum: " + props.start_date + "</p>";
                 if (props.type)
                   info += "<p>Art: " + props.type + "</p>";
                 if (props.distance)
-                  info += "<p>Strecke: " + props.distance/1000 + " km</p>";
+                  info += "<p>Strecke: " + round(props.distance/1000,1) + " km</p>";
                 if (props.avg_speed)
-                  info += "<p>Geschwindigkeit: " + props.avg_speed*3.6 + " km/h</p>";
+                  info += "<p>Geschwindigkeit: " + round(props.avg_speed*3.6,1) + " km/h</p>";
                 if (props.elevation)
                   info += "<p>Anstieg: " + props.elevation + " m</p>";
                 if (props.description)
