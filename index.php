@@ -174,6 +174,7 @@ $db = null;
 
 
       <script type="text/javascript">
+        var vectorLayer = null;
         var map = new ol.Map({
           target: 'map',
           layers: [
@@ -203,7 +204,7 @@ $db = null;
           xhttp.send();
         }
 
-        function styleFilter () {
+        function styleFilter (feature) {
           let von = document.getElementById("von").value;
           let bis = document.getElementById("bis").value;
           let ride = document.getElementById("ride").checked;
@@ -223,7 +224,8 @@ $db = null;
         }
 
         function filter () {
-
+          if (vectorLayer)
+          vectorLayer.getSource().changed();
         }
 
         function load_geo() {
@@ -240,7 +242,7 @@ $db = null;
                 })
               });
 
-              var vectorLayer = new ol.layer.Vector({
+              vectorLayer = new ol.layer.Vector({
                 source: vectorSource,
                 style: function(feature, resolution) {
                   if (!styleFilter(feature)) {
