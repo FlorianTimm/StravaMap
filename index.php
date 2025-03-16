@@ -147,6 +147,8 @@ $db = null;
     <input type="checkbox" id="run" checked onchange="filter()">Run
     <input type="checkbox" id="other" checked onchange="filter()">Other
     <br />
+    <input type="checkbox" id="athlete_count" checked onchange="filter()">Teilnehmer > 1
+    <br />
     <span id='gfi'></span>
   </div>
 
@@ -212,6 +214,7 @@ $db = null;
           let hike = document.getElementById("hike").checked;
           let run = document.getElementById("run").checked;
           let other = document.getElementById("other").checked;
+          let athlete_count = document.getElementById("athlete_count").checked;
 
           console.log(von);
 
@@ -222,6 +225,8 @@ $db = null;
           if (!other && feature.get('type') != 'Ride' && feature.get('type') != 'Walk' && feature.get('type') != 'Hike' && feature.get('type') != 'Run') return false;
           if (von && feature.get('starttime') < von) return false;
           if (bis && feature.get('starttime') > bis) return false;
+
+          if (athlete_count && feature.get('athlete_count') < 2) return false;
 
           return true;
         }
