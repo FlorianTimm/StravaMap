@@ -76,6 +76,7 @@ $db = null;
 
 <head>
   <link rel="stylesheet" href="openlayers/ol.css" type="text/css">
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     body,
     html,
@@ -127,6 +128,8 @@ $db = null;
       top: 20px;
       right: 10px;
       background-color: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      font-family: sans-serif;
     }
   </style>
   <script src="openlayers/ol.js"></script>
@@ -247,14 +250,21 @@ $db = null;
                 let auswahl = event.selected[0];
                 let props = auswahl.getProperties();
                 let info = "<h2>" + props.name + "</h2>";
-                info += "<p>" + props.type + "</p>";
-                info += "<p>" + props.distance + "</p>";
-                info += "<p>" + props.avg_speed + "m/s</p>";
-                info += "<p>" + props.elevation + "m</p>";
-                info += "<p>" + props.description + "</p>";
-                info += "<p>" + "https://www.strava.com/activities/" + auswahl.get("id") + "</p>";
+                if (props.start_date)
+                  info += "<p>" + props.start_date + "</p>";
+                if (props.type)
+                  info += "<p>" + props.type + "</p>";
+                if (props.distance)
+                  info += "<p>" + props.distance + "</p>";
+                if (props.avg_speed)
+                  info += "<p>" + props.avg_speed + "m/s</p>";
+                if (props.elevation)
+                  info += "<p>" + props.elevation + "m</p>";
+                if (props.description)
+                  info += "<p>" + props.description + "</p>";
+                info += "<p><a href='https://www.strava.com/activities/" + auswahl.get("id") + "'>Auf Strava anzeigen</a></p>";
                 document.getElementById("info").innerHTML = info;
-                document.getElementById("info").style.display = "";
+                document.getElementById("info").style.display = "block";
               });
               map.addLayer(vectorLayer);
               map.addInteraction(select);
