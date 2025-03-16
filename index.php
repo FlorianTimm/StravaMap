@@ -147,7 +147,7 @@ $db = null;
     <input type="checkbox" id="run" checked onchange="filter()">Run
     <input type="checkbox" id="other" checked onchange="filter()">Other
     <br />
-    <input type="checkbox" id="athlete_count" checked onchange="filter()">Teilnehmer > 1
+    <input type="checkbox" id="athlete_count"  onchange="filter()">Teilnehmer > 1
     <br />
     <span id='gfi'></span>
   </div>
