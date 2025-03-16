@@ -1,0 +1,6 @@
+PHP-Anwendung um Strava-Tracks auf einer OpenLayers-Karte anzuzeigen oder als WFS in GIS zu verwenden.
+
+## Installation
+- Datei `class/Config.example.class.php` anpassen und als `class/Config.class.php` speichern
+- Bilder für Strava-Connect-Button und Strava-Logo ablegen
+- OpenLayers-Dateien ablegen in `openlayers/`
