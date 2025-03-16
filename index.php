@@ -253,12 +253,16 @@ $db = null;
                 let info = "<h2>" + props.name + "</h2>";
                 if (props.start_date)
                   info += "<p>Datum: " + props.start_date + "</p>";
+                if (props.elapsed_time)
+                  info += "<p>Dauer: " + new Date(props.elapsed_time * 1000).toISOString().substring(11, 16) + "</p>";
+                if (props.athlete_count)
+                  info += "<p>Teilnehmer: " + props.athlete_count + "</p>";
                 if (props.type)
                   info += "<p>Art: " + props.type + "</p>";
                 if (props.distance)
-                  info += "<p>Strecke: " + round(props.distance/1000,1) + " km</p>";
+                  info += "<p>Strecke: " + Math.round(props.distance/1000,1) + " km</p>";
                 if (props.avg_speed)
-                  info += "<p>Geschwindigkeit: " + round(props.avg_speed*3.6,1) + " km/h</p>";
+                  info += "<p>Geschwindigkeit: " + Math.round(props.avg_speed*3.6,1) + " km/h</p>";
                 if (props.elevation)
                   info += "<p>Anstieg: " + props.elevation + " m</p>";
                 if (props.description)
