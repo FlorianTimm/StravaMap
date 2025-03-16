@@ -4,7 +4,6 @@ require_once "class/Database.class.php";
 $login = false;
 $name = '';
 $user = 0;
-$db = null;
 
 $db = Database::getConnection();
 
@@ -121,6 +120,14 @@ $db = null;
     .wait * {
       cursor: wait !important;
     }
+
+    #info {
+      display: none;
+      position: absolute;
+      top: 20px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
   </style>
   <script src="openlayers/ol.js"></script>
   <title>StavaAPI Test</title>
@@ -128,6 +135,8 @@ $db = null;
 
 <body>
   <div id="map" class="map"></div>
+  <div id='info'></div>
+
   <a href="http://strava.com" style="position: absolute; bottom: 5px; right: 5px;"><img src="api_logo_pwrdBy_strava_stack_light.png" alt="powered by Strava" /></a>
   <div id="ausblenden">
     <div>
@@ -232,10 +241,20 @@ $db = null;
               });
               select.on("select", function(event) {
                 if (event.selected.length == 0) {
+                  document.getElementById("info").style.display = "none";
                   return;
                 }
                 let auswahl = event.selected[0];
-                window.open("https://www.strava.com/activities/" + auswahl.get("id"));
+                let props = auswahl.getProperties();
+                let info = "<h2>" + props.name + "</h2>";
+                info += "<p>" + props.type + "</p>";
+                info += "<p>" + props.distance + "</p>";
+                info += "<p>" + props.avg_speed + "m/s</p>";
+                info += "<p>" + props.elevation + "m</p>";
+                info += "<p>" + props.description + "</p>";
+                info += "<p>" + "https://www.strava.com/activities/" + auswahl.get("id") + "</p>";
+                document.getElementById("info").innerHTML = info;
+                document.getElementById("info").style.display = "";
               });
               map.addLayer(vectorLayer);
               map.addInteraction(select);
