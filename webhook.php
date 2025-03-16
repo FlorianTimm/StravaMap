@@ -3,10 +3,10 @@ require 'login.php';
 
 $url = 'https://api.strava.com/api/v3/push_subscriptions';
 $data = array(
-    'client_id' => $strava_client,
-    'client_secret' => $strava_secret,
+    'client_id' => Config::$strava_client,
+    'client_secret' => Config::$strava_secret,
     'callback_url' => Config::$url . "webhook_callback.php",
-    'verify_token' => 'strava2qgis'
+    'verify_token' => Config::$strava_name,
 );
 $options = array(
     'http' => array(

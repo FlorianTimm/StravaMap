@@ -6,6 +6,7 @@ class Config
     static $password = "";
     static $dbname = "";
 
+    static $strava_name = '';
     static $strava_secret = '';
     static $strava_client = '';
 

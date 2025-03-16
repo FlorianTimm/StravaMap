@@ -13,7 +13,7 @@ if (isset($_GET['code'])) {
 
 
   $url = 'https://www.strava.com/oauth/token';
-  $data = array('client_id' => $strava_client, 'client_secret' => $strava_secret, 'code' => $code, 'grant_type' => 'authorization_code');
+  $data = array('client_id' => Config::$strava_client, 'client_secret' => Config::$strava_secret, 'code' => $code, 'grant_type' => 'authorization_code');
   $options = array(
     'http' => array(
       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -142,7 +142,7 @@ $db = null;
           echo '<input type="button" id="laden" value="Daten aus DB laden" onclick="load_geo()" >';
         } else {
           echo "Um Daten auf der Karte anzeigen zu können, müssen Sie sich bei Strava zuerst einloggen:";
-          echo "<a href='https://www.strava.com/oauth/authorize?client_id=" . $strava_client . "&response_type=code&scope=activity:read_all,profile:read_all,activity:write&redirect_uri=" . Config::$url;
+          echo "<a href='https://www.strava.com/oauth/authorize?client_id=" . Config::$strava_client . "&response_type=code&scope=activity:read_all,profile:read_all,activity:write&redirect_uri=" . Config::$url;
           echo "index.php'><img src='btn_strava_connectwith_orange.png' alt='Login with Strava' /></a>";
         }
         ?>
