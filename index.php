@@ -251,15 +251,15 @@ $db = null;
                 let props = auswahl.getProperties();
                 let info = "<h2>" + props.name + "</h2>";
                 if (props.start_date)
-                  info += "<p>" + props.start_date + "</p>";
+                  info += "<p>Datum: " + props.start_date + "</p>";
                 if (props.type)
-                  info += "<p>" + props.type + "</p>";
+                  info += "<p>Art: " + props.type + "</p>";
                 if (props.distance)
-                  info += "<p>" + props.distance + "</p>";
+                  info += "<p>Strecke: " + props.distance/1000 + " km</p>";
                 if (props.avg_speed)
-                  info += "<p>" + props.avg_speed + "m/s</p>";
+                  info += "<p>Geschwindigkeit: " + props.avg_speed*3.6 + " km/h</p>";
                 if (props.elevation)
-                  info += "<p>" + props.elevation + "m</p>";
+                  info += "<p>Anstieg: " + props.elevation + " m</p>";
                 if (props.description)
                   info += "<p>" + props.description + "</p>";
                 info += "<p><a href='https://www.strava.com/activities/" + auswahl.get("id") + "'>Auf Strava anzeigen</a></p>";
