@@ -7,14 +7,16 @@ class Login {
     private $user = 0;
     private $name = "";
 
-    private $db = Database::getConnection();
+    private $db = null;
 
-    __construct () {
+    public function __construct () {
+        $this->db = Database::getConnection();
+
         // Neu eingeloggt
         if (isset($_GET['code'])) {
 
             $url = 'https://www.strava.com/oauth/token';
-            $data = array('client_id' => $strava_client, 'client_secret' => $strava_secret, 'code' => $_GET['code'], 'grant_type' => 'authorization_code');
+            $data = array('client_id' => Config::$strava_client, 'client_secret' => Config::$strava_secret, 'code' => $_GET['code'], 'grant_type' => 'authorization_code');
             $options = array(
                     'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
