@@ -123,7 +123,6 @@ $db = null;
     }
 
     #info {
-      display: none;
       position: absolute;
       top: 20px;
       right: 10px;
@@ -138,7 +137,18 @@ $db = null;
 
 <body>
   <div id="map" class="map"></div>
-  <div id='info'></div>
+  <div id='info'>
+    <input type="date" id="von" value="2020-01-01" onchange="filter()">
+    <input type="date" id="bis" value="2020-12-31" onchange="filter()">
+    <br />
+    <input type="checkbox" id="ride" checked onchange="filter()">Ride
+    <input type="checkbox" id="walk" checked onchange="filter()">Walk
+    <input type="checkbox" id="hike" checked onchange="filter()">Hike
+    <input type="checkbox" id="run" checked onchange="filter()">Run
+    <input type="checkbox" id="other" checked onchange="filter()">Other
+    <br />
+    <span id='gfi'></span>
+  </div>
 
   <a href="http://strava.com" style="position: absolute; bottom: 5px; right: 5px;"><img src="api_logo_pwrdBy_strava_stack_light.png" alt="powered by Strava" /></a>
   <div id="ausblenden">
@@ -193,6 +203,29 @@ $db = null;
           xhttp.send();
         }
 
+        function styleFilter () {
+          let von = document.getElementById("von").value;
+          let bis = document.getElementById("bis").value;
+          let ride = document.getElementById("ride").checked;
+          let walk = document.getElementById("walk").checked;
+          let hike = document.getElementById("hike").checked;
+          let run = document.getElementById("run").checked;
+          let other = document.getElementById("other").checked;
+
+          if (!ride && feature.get('type') == 'Ride') return false;
+          if (!walk && feature.get('type') == 'Walk') return false;
+          if (!hike && feature.get('type') == 'Hike') return false;
+          if (!run && feature.get('type') == 'Run') return false;
+          if (!other && feature.get('type') != 'Ride' && feature.get('type') != 'Walk' && feature.get('type') != 'Hike' && feature.get('type') != 'Run') return false;
+          if (feature.get('start_date') < von || feature.get('start_date') > bis) return false;
+
+          return true;
+        }
+
+        function filter () {
+
+        }
+
         function load_geo() {
 
           var xhttp = new XMLHttpRequest();
@@ -210,6 +243,9 @@ $db = null;
               var vectorLayer = new ol.layer.Vector({
                 source: vectorSource,
                 style: function(feature, resolution) {
+                  if (!styleFilter(feature)) {
+                    return null;
+                  }
                   let typ = feature.get('type');
                   let color = "red";
                   switch (typ) {
@@ -244,7 +280,7 @@ $db = null;
               });
               select.on("select", function(event) {
                 if (event.selected.length == 0) {
-                  document.getElementById("info").style.display = "none";
+                  document.getElementById("gfi").innerHTML = "";
                   return;
                 }
                 let auswahl = event.selected[0];
@@ -267,9 +303,8 @@ $db = null;
                   info += "<p>Anstieg: " + props.elevation + " m</p>";
                 if (props.description)
                   info += "<p>" + props.description + "</p>";
-                info += "<p><a href='https://www.strava.com/activities/" + auswahl.get("id") + "'>Auf Strava anzeigen</a></p>";
-                document.getElementById("info").innerHTML = info;
-                document.getElementById("info").style.display = "block";
+                info += "<p><a target='_strava' href='https://www.strava.com/activities/" + auswahl.get("id") + "'>Auf Strava anzeigen</a></p>";
+                document.getElementById("gfi").innerHTML = info;
               });
               map.addLayer(vectorLayer);
               map.addInteraction(select);
