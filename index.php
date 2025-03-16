@@ -138,8 +138,8 @@ $db = null;
 <body>
   <div id="map" class="map"></div>
   <div id='info'>
-    <input type="date" id="von" value="2020-01-01" onchange="filter()">
-    <input type="date" id="bis" value="2020-12-31" onchange="filter()">
+    <input type="date" id="von" onchange="filter()">
+    <input type="date" id="bis" onchange="filter()">
     <br />
     <input type="checkbox" id="ride" checked onchange="filter()">Ride
     <input type="checkbox" id="walk" checked onchange="filter()">Walk
@@ -213,12 +213,15 @@ $db = null;
           let run = document.getElementById("run").checked;
           let other = document.getElementById("other").checked;
 
+          console.log(von);
+
           if (!ride && feature.get('type') == 'Ride') return false;
           if (!walk && feature.get('type') == 'Walk') return false;
           if (!hike && feature.get('type') == 'Hike') return false;
           if (!run && feature.get('type') == 'Run') return false;
           if (!other && feature.get('type') != 'Ride' && feature.get('type') != 'Walk' && feature.get('type') != 'Hike' && feature.get('type') != 'Run') return false;
-          if (feature.get('start_date') < von || feature.get('start_date') > bis) return false;
+          if (von && feature.get('start_date') < von) return false;
+          if (bis && feature.get('start_date') > bis) return false;
 
           return true;
         }
