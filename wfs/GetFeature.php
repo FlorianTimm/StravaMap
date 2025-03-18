@@ -118,7 +118,7 @@ try {
         $bbox = explode(",", $_GET["BBOX"]);
     }
     if (isset($_GET["COUNT"])) {
-        $limit = $_GET["COUNT"];
+        $limit = (int)$_GET["COUNT"];
     }
     if (isset($_GET["USER"])) {
         $user = $_GET["USER"];
@@ -126,12 +126,12 @@ try {
 
     $sql = 'SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM
         :table_name where 1=1 ';
-    if ($bbox != null) {
+    if ($bbox != null)
         $sql .= 'AND ST_INTERSECTS(:geom, ST_GEOMFROMTEXT(:bbox)) ';
-    }
-    if ($user != null) {
+    
+    if ($user != null)
         $sql .= 'AND user = :user ';
-    }
+    
     $sql .= 'LIMIT :limit';
 
     $db = Database::getInstance();
@@ -141,8 +141,8 @@ try {
     if ($bbox != null)
         $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
     if ($user != null)
-        $stmt->bindParam(':user', $user);
-    $stmt->bindParam(':limit', $limit);
+        $stmt->bindParam(':user', $user, PDO::PARAM_STR);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
     $rs = $stmt->fetchAll();
 
