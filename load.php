@@ -1,6 +1,16 @@
 <?php
-include 'Polyline.php';
-require 'login.php';
+require_once "class/Polyline.class.php";
+require_once "class/Login.class.php";
+
+$login = Login::getInstance();
+
+if ($login->isLoggedin() == false) {
+    die("No token");
+}
+
+$db = Database::getInstance();
+
+$token = $login->getToken();
 
 $per_page = 100;
 $max_pages = 20;
