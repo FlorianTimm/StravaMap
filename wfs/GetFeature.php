@@ -124,8 +124,8 @@ try {
         $user = $_GET["USER"];
     }
 
-    $sql = 'SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM
-        :table_name where 1=1 ';
+    $sql = "SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM :table_name where 1=1 ";
+
     if ($bbox != null)
         $sql .= 'AND ST_INTERSECTS(:geom, ST_GEOMFROMTEXT(:bbox)) ';
     
