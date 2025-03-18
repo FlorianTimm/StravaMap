@@ -114,30 +114,34 @@ try {
     $table_name = $layer[0];
     $geom = $layer[1];
 
-    if (isset($_GET["BBOX"])) {
-        $bbox = explode(",", $_GET["BBOX"]);
+    if (isset($_GET["bbox"])) {
+        $ba = explode(",", $_GET["bbox"]);
+        $bbox = "POLYGON(($ba[0] $ba[1], $ba[0] $ba[3], $ba[2] $ba[3], $ba[2] $ba[1], $ba[0] $ba[1]))";
     }
-    if (isset($_GET["COUNT"])) {
-        $limit = (int)$_GET["COUNT"];
-    }
-    if (isset($_GET["USER"])) {
-        $user = $_GET["USER"];
+    if (isset($_GET["count"])) {
+        $limit = (int)$_GET["count"];
+    } else if (isset($_GET["maxfeatures"])) {
+        $limit = (int)$_GET["maxfeatures"];
     }
 
-    $sql = "SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM :table_name where 1=1 ";
+    if (isset($_GET["user"])) {
+        $user = $_GET["user"];
+    }
+
+    $sql = "SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM " . $table_name . " where 1=1 ";
 
     if ($bbox != null)
         $sql .= 'AND ST_INTERSECTS(:geom, ST_GEOMFROMTEXT(:bbox)) ';
-    
+
     if ($user != null)
         $sql .= 'AND user = :user ';
-    
+
     $sql .= 'LIMIT :limit';
 
     $db = Database::getInstance();
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':table_name', $table_name);
-    $stmt->bindParam(':geom', $geom);   
+    $stmt->bindParam(':geom', $geom);
     if ($bbox != null)
         $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
     if ($user != null)
@@ -154,4 +158,3 @@ try {
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
-?>
