@@ -142,6 +142,6 @@ function load_geo() {
             document.getElementById("login").style.display = "none";
         }
     };
-    xhttp.open("GET", "./wfs/?SERVICE=WFS&REQUEST=GetFeature&TYPENAMES=gis:linien&outputFormat=application/json&user=<?php echo $user ?>", true);
+    xhttp.open("GET", "./wfs/?SERVICE=WFS&REQUEST=GetFeature&TYPENAMES=gis:linien&outputFormat=application/json&user=" + user, true);
     xhttp.send();
 }

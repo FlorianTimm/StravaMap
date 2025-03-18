@@ -49,7 +49,9 @@ $login = Login::getInstance();
         }
         ?>
       </div>
-
+        <script type="text/javascript">
+          var user = <?php echo $login->getUserId(); ?>;
+        </script>
       <script type="text/javascript" src="js/script.js"></script>
 </body>
 

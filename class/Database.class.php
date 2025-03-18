@@ -6,7 +6,7 @@ class Database
     private $db = null;
 
     private static $instance = null;
-    
+
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -29,7 +29,7 @@ class Database
         }
     }
 
-    private function __destruct()
+    public function __destruct()
     {
         $this->db = null;
     }

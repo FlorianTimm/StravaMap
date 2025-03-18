@@ -48,7 +48,7 @@ class Login
                 $stmt = $this->db->prepare('REPLACE INTO strava_authkey (user, code, access, refresh, expire) VALUES(:user, :code, :access, :refresh, FROM_UNIXTIME(:expire))');
                 $stmt->bindParam(':user', $answer["athlete"]["id"]);
                 $stmt->bindParam(':code', $code);
-                $stmt->bindParam(':acces', $answer["access_token"]);
+                $stmt->bindParam(':access', $answer["access_token"]);
                 $stmt->bindParam(':refresh', $answer["refresh_token"]);
                 $stmt->bindParam(':expire', $answer["expires_at"]);
                 $stmt->execute();
@@ -93,6 +93,11 @@ class Login
     public function getUserName()
     {
         return $this->name;
+    }
+
+    public function getUserId()
+    {
+        return $this->user;
     }
 
     public function isLoggedin()

@@ -107,21 +107,41 @@ function json($layer_name, $rs)
 
 try {
     //echo $layer[1];
+    $bbox = null;
+    $limit = 5000;
+    $user = null;
+
     $table_name = $layer[0];
     $geom = $layer[1];
-    $bbox = explode(",", $_GET["BBOX"]);
-    $limit = $layer[2];
+
+    if (isset($_GET["BBOX"])) {
+        $bbox = explode(",", $_GET["BBOX"]);
+    }
+    if (isset($_GET["COUNT"])) {
+        $limit = $_GET["COUNT"];
+    }
+    if (isset($_GET["USER"])) {
+        $user = $_GET["USER"];
+    }
 
     $sql = 'SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM
-        :table_name where  ST_CONTAINS(:geom, ST_GEOMFROMTEXT(:bbox)) 
-        AND user = :user LIMIT :limit';
+        :table_name where 1=1 ';
+    if ($bbox != null) {
+        $sql .= 'AND ST_INTERSECTS(:geom, ST_GEOMFROMTEXT(:bbox)) ';
+    }
+    if ($user != null) {
+        $sql .= 'AND user = :user ';
+    }
+    $sql .= 'LIMIT :limit';
 
     $db = Database::getInstance();
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':table_name', $table_name);
     $stmt->bindParam(':geom', $geom);   
-    $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
-    $stmt->bindParam(':user', $login->getUser());
+    if ($bbox != null)
+        $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
+    if ($user != null)
+        $stmt->bindParam(':user', $user);
     $stmt->bindParam(':limit', $limit);
     $stmt->execute();
     $rs = $stmt->fetchAll();
