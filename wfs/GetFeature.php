@@ -115,8 +115,7 @@ try {
     $geom = $layer[1];
 
     if (isset($_GET["bbox"])) {
-        $ba = explode(",", $_GET["bbox"]);
-        $bbox = "POLYGON(($ba[0] $ba[1], $ba[0] $ba[3], $ba[2] $ba[3], $ba[2] $ba[1], $ba[0] $ba[1]))";
+        $bbox = explode(",", $_GET["bbox"]);
     }
     if (isset($_GET["count"])) {
         $limit = (int)$_GET["count"];
@@ -128,10 +127,10 @@ try {
         $user = $_GET["user"];
     }
 
-    $sql = "SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM " . $table_name . " where 1=1 ";
+    $sql = "SELECT *, AsText(" . $geom . ") geometryWKT, ST_SRID(:geom) geometrySRID FROM " . $table_name . " where 1=1 ";
 
     if ($bbox != null)
-        $sql .= 'AND ST_INTERSECTS(:geom, ST_GEOMFROMTEXT(:bbox)) ';
+        $sql .= 'AND ST_INTERSECTS(' . $geom . ', ST_GEOMFROMTEXT(:bbox)) ';
 
     if ($user != null)
         $sql .= 'AND user = :user ';
