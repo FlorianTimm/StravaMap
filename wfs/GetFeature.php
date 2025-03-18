@@ -139,8 +139,6 @@ try {
 
     $db = Database::getInstance();
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':table_name', $table_name);
-    $stmt->bindParam(':geom', $geom);
     if ($bbox != null)
         $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
     if ($user != null)
