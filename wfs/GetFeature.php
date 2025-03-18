@@ -118,9 +118,9 @@ try {
         $bbox = explode(",", $_GET["bbox"]);
     }
     if (isset($_GET["count"])) {
-        $limit = (int)$_GET["count"];
+        $limit = $_GET["count"];
     } else if (isset($_GET["maxfeatures"])) {
-        $limit = (int)$_GET["maxfeatures"];
+        $limit = $_GET["maxfeatures"];
     }
 
     if (isset($_GET["user"])) {
@@ -145,12 +145,11 @@ try {
         $stmt->bindParam(':user', $user, PDO::PARAM_STR);
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
-    $rs = $stmt->fetchAll();
 
     if ($_GET["outputFormat"] == 'application/json') {
-        json($layer_name, $rs);
+        json($layer_name, $stmt);
     } else {
-        xml($layer_name, $rs);
+        xml($layer_name, $stmt);
     }
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
