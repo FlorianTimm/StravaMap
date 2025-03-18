@@ -11,6 +11,11 @@ BBOX:-97.3046803985359503,93.16956757890432073,-7.4367093584813091,199.858579992
 */
 
 $layer_name = explode(':', $_GET['TYPENAMES'])[1];
+if (!array_key_exists($layer_name, $layers)) {
+    header("HTTP/1.1 404 Not Found");
+    echo "Layer not found";
+    exit;
+}
 $layer = $layers[$layer_name];
 
 
@@ -102,31 +107,24 @@ function json($layer_name, $rs)
 
 try {
     //echo $layer[1];
-    $sql = 'SELECT *, AsText(' . $layer[1] . ') geometryWKT, ST_SRID(' . $layer[1] . ') geometrySRID FROM ' . $layer[0];
+    $table_name = $layer[0];
+    $geom = $layer[1];
+    $bbox = explode(",", $_GET["BBOX"]);
+    $limit = $layer[2];
 
-    if (isset($_GET['BBOX'])) {
-        $sql .= ' where ST_CONTAINS(' . $layer[1] . ', ST_GEOMFROMTEXT(\'POLYGON((';
-        $bbox = explode(",", $_GET["BBOX"]);
-        $sql .= $bbox[1] . ' ' . $bbox[0] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[3] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[2] . ',' . $bbox[1] . ' ' . $bbox[0];
-        $sql .= '))\'))';
-    }
+    $sql = 'SELECT *, AsText(:geom) geometryWKT, ST_SRID(:geom) geometrySRID FROM
+        :table_name where  ST_CONTAINS(:geom, ST_GEOMFROMTEXT(:bbox)) 
+        AND user = :user LIMIT :limit';
 
-    if (isset($_GET["user"])) {
-        if (!(isset($_GET['BBOX']))) {
-            $sql .= ' where';
-        }
-        $sql .= ' user = ' . $_GET["user"];
-    }
-
-    if (isset($_GET["count"]) && $_GET["count"] < 1000) {
-        $sql .= " LIMIT " . $_GET["count"];
-    } else {
-        $sql .= " LIMIT 5000";
-    }
-
-
-    //echo $sql;
-    $rs = $db->query($sql);
+    $db = Database::getInstance();
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':table_name', $table_name);
+    $stmt->bindParam(':geom', $geom);   
+    $stmt->bindParam(':bbox', 'POLYGON((' . $bbox[0] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[3] . ',' . $bbox[2] . ' ' . $bbox[1] . ',' . $bbox[0] . ' ' . $bbox[1] . '))');
+    $stmt->bindParam(':user', $login->getUser());
+    $stmt->bindParam(':limit', $limit);
+    $stmt->execute();
+    $rs = $stmt->fetchAll();
 
     if ($_GET["outputFormat"] == 'application/json') {
         json($layer_name, $rs);

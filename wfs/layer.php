@@ -1,6 +1,6 @@
 <?php
 require_once "../class/Database.class.php";
-$db = Database::getConnection();
+$db = Database::getInstance();
 
 $layers = [
     "punkte"=>["strava_points","point"],
